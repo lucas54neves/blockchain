@@ -8,28 +8,26 @@ using namespace std;
 
 int main() {
     Blockchain chain;
-    Block testBlock("Dado teste", "0");
-    chain.AddBlock(testBlock);
-    if (chain.ValidChain()) {
-        cout << "Válida" << endl;
-    } else {
-        cout << "Inválida" << endl;
+    string dado;
+    for (unsigned int i = 2; i < 7; ++i) {
+        cout << "Entre com os dados do bloco " << i << endl;
+        cin >> dado;
+        Block testBlock(dado, chain.GetLastBlock().GetHash(), chain.Size()+1);
+        chain.AddBlock(testBlock);
+        
     }
     
-    cout << "Tamanho: " << chain.Size() << endl;
-
-
-/*    blockchain chain;
-    Block B1("D1asds", "hash1");
-    chain.push_back(B1);
-    Block B2("D2sfd", "hash2");
-    chain.push_back(B2);
-    Block B3("D3asd", "hash3");
-    chain.push_back(B3);
-    cout << "Tamanho: " << chain.size() << endl;
-     
-    for(blockchain::iterator j = chain.begin();
-     j != chain.end(); j++)
-     	cout << (j)->GetData() << endl; */
+    cout << endl;
+    cout << "Tamanho da Blockchain: " << chain.Size() << endl;
+    cout << endl;
+    
+    chain.Print();
+    
+    if (chain.ValidChain()) {
+        cout << "Blockchain válida" << endl;
+    } else {
+        cout << "Blockchain inválida" << endl;
+    }
+    
     return 0;
 }

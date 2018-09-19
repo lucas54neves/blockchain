@@ -1,210 +1,53 @@
- // sha.h - originally written and placed in the public domain by Wei Dai
+#ifndef SHA256_HPP
+#define SHA256_HPP
+#include <string>
  
- /// \file sha.h
- /// \brief Classes for SHA-1 and SHA-2 family of message digests
- /// \since SHA1 since Crypto++ 1.0, SHA2 since Crypto++ 4.0, ARMv8 SHA since
- ///   Crypto++ 6.0, Intel SHA since Crypto++ 6.0, Power8 SHA since Crypto++ 6.1
+class SHA256
+{
+protected:
+    typedef unsigned char uint8;
+    typedef unsigned int uint32;
+    typedef unsigned long long uint64;
  
- #ifndef CRYPTOPP_SHA_H
- #define CRYPTOPP_SHA_H
+    const static uint32 sha256_k[];
+    static const unsigned int SHA224_256_BLOCK_SIZE = (512/8);
+public:
+    void init();
+    void update(const unsigned char *message, unsigned int len);
+    void final(unsigned char *digest);
+    static const unsigned int DIGEST_SIZE = ( 256 / 8);
  
- #include "config.h"
- #include "iterhash.h"
+protected:
+    void transform(const unsigned char *message, unsigned int block_nb);
+    unsigned int m_tot_len;
+    unsigned int m_len;
+    unsigned char m_block[2*SHA224_256_BLOCK_SIZE];
+    uint32 m_h[8];
+};
  
- // Clang 3.3 integrated assembler crash on Linux. Clang 3.4 due to compiler
- // error with .intel_syntax, http://llvm.org/bugs/show_bug.cgi?id=24232
- #if CRYPTOPP_BOOL_X32 || defined(CRYPTOPP_DISABLE_INTEL_ASM)
- # define CRYPTOPP_DISABLE_SHA_ASM 1
- #endif
+std::string sha256(std::string input);
  
- NAMESPACE_BEGIN(CryptoPP)
- 
- /// \brief SHA-1 message digest
- /// \sa <a href="http://www.weidai.com/scan-mirror/md.html#SHA-1">SHA-1</a>
- /// \since SHA1 since Crypto++ 1.0, SHA2 since Crypto++ 4.0, ARMv8 SHA since
- ///   Crypto++ 6.0, Intel SHA since Crypto++ 6.0
- class CRYPTOPP_DLL SHA1 : public IteratedHashWithStaticTransform<word32, BigEndian, 64, 20, SHA1>
- {
- public:
-     /// \brief Initialize state array
-     /// \param state the state of the hash
-     /// \details InitState sets a state array to SHA1 initial values
-     /// \details Hashes which derive from IteratedHashWithStaticTransform provide static
-     ///   member functions InitState and Transform. External classes, like SEAL and MDC,
-     ///   can initialize state with a user provided key and operate the hash on the data
-     ///   with the user supplied state.
-     /// \note On Intel platforms the state array must be 16-byte aligned for SSE2.
-     static void CRYPTOPP_API InitState(HashWordType *state);
-     /// \brief Operate the hash
-     /// \param digest the state of the hash
-     /// \param data the data to be digested
-     /// \details Transform operates the hash on <tt>data</tt>. When the call is invoked
-     ///   <tt>digest</tt> holds initial state. Upon return <tt>digest</tt> holds the hash
-     ///   or updated state.
-     /// \details Hashes which derive from IteratedHashWithStaticTransform provide static
-     ///   member functions InitState and Transform. External classes, like SEAL and MDC,
-     ///   can initialize state with a user provided key and operate the hash on the data
-     ///   with the user supplied state.
-     /// \note On Intel platforms the state array and data must be 16-byte aligned for SSE2.
-     static void CRYPTOPP_API Transform(HashWordType *digest, const HashWordType *data);
-     /// \brief The algorithm name
-     /// \returns C-style string "SHA-1"
-     CRYPTOPP_STATIC_CONSTEXPR const char* CRYPTOPP_API StaticAlgorithmName() {return "SHA-1";}
-     // Algorithm class
-     std::string AlgorithmProvider() const;
- 
- protected:
-     size_t HashMultipleBlocks(const HashWordType *input, size_t length);
- };
- 
- /// \brief SHA-256 message digest
- /// \sa <a href="http://www.weidai.com/scan-mirror/md.html#SHA-256">SHA-256</a>
- /// \since SHA2 since Crypto++ 4.0, ARMv8 SHA since Crypto++ 6.0,
- ///   Intel SHA since Crypto++ 6.0, Power8 SHA since Crypto++ 6.1
- class CRYPTOPP_DLL SHA256 : public IteratedHashWithStaticTransform<word32, BigEndian, 64, 32, SHA256, 32, true>
- {
- public:
-     /// \brief Initialize state array
-     /// \param state the state of the hash
-     /// \details InitState sets a state array to SHA256 initial values
-     /// \details Hashes which derive from IteratedHashWithStaticTransform provide static
-     ///   member functions InitState and Transform. External classes, like SEAL and MDC,
-     ///   can initialize state with a user provided key and operate the hash on the data
-     ///   with the user supplied state.
-     /// \note On Intel platforms the state array must be 16-byte aligned for SSE2.
-     static void CRYPTOPP_API InitState(HashWordType *state);
-     /// \brief Operate the hash
-     /// \param digest the state of the hash
-     /// \param data the data to be digested
-     /// \details Transform operates the hash on <tt>data</tt>. When the call is invoked
-     ///   <tt>digest</tt> holds initial state. Upon return <tt>digest</tt> holds the hash
-     ///   or updated state.
-     /// \details Hashes which derive from IteratedHashWithStaticTransform provide static
-     ///   member functions InitState and Transform. External classes, like SEAL and MDC,
-     ///   can initialize state with a user provided key and operate the hash on the data
-     ///   with the user supplied state.
-     /// \note On Intel platforms the state array and data must be 16-byte aligned for SSE2.
-     static void CRYPTOPP_API Transform(HashWordType *digest, const HashWordType *data);
-     /// \brief The algorithm name
-     /// \returns C-style string "SHA-256"
-     CRYPTOPP_STATIC_CONSTEXPR const char* CRYPTOPP_API StaticAlgorithmName() {return "SHA-256";}
- 
-     // Algorithm class
-     std::string AlgorithmProvider() const;
- 
- protected:
-     size_t HashMultipleBlocks(const HashWordType *input, size_t length);
- };
- 
- /// \brief SHA-224 message digest
- /// \sa <a href="http://www.weidai.com/scan-mirror/md.html#SHA-224">SHA-224</a>
- /// \since SHA2 since Crypto++ 4.0, ARMv8 SHA since Crypto++ 6.0,
- ///   Intel SHA since Crypto++ 6.0, Power8 SHA since Crypto++ 6.1
- class CRYPTOPP_DLL SHA224 : public IteratedHashWithStaticTransform<word32, BigEndian, 64, 32, SHA224, 28, true>
- {
- public:
-     /// \brief Initialize state array
-     /// \param state the state of the hash
-     /// \details InitState sets a state array to SHA224 initial values
-     /// \details Hashes which derive from IteratedHashWithStaticTransform provide static
-     ///   member functions InitState and Transform. External classes, like SEAL and MDC,
-     ///   can initialize state with a user provided key and operate the hash on the data
-     ///   with the user supplied state.
-     /// \note On Intel platforms the state array must be 16-byte aligned for SSE2.
-     static void CRYPTOPP_API InitState(HashWordType *state);
-     /// \brief Operate the hash
-     /// \param digest the state of the hash
-     /// \param data the data to be digested
-     /// \details Transform operates the hash on <tt>data</tt>. When the call is invoked
-     ///   <tt>digest</tt> holds initial state. Upon return <tt>digest</tt> holds the hash
-     ///   or updated state.
-     /// \details Hashes which derive from IteratedHashWithStaticTransform provide static
-     ///   member functions InitState and Transform. External classes, like SEAL and MDC,
-     ///   can initialize state with a user provided key and operate the hash on the data
-     ///   with the user supplied state.
-     /// \note On Intel platforms the state array and data must be 16-byte aligned for SSE2.
-     static void CRYPTOPP_API Transform(HashWordType *digest, const HashWordType *data) {SHA256::Transform(digest, data);}
-     /// \brief The algorithm name
-     /// \returns C-style string "SHA-224"
-     CRYPTOPP_STATIC_CONSTEXPR const char* CRYPTOPP_API StaticAlgorithmName() {return "SHA-224";}
- 
-     // Algorithm class
-     std::string AlgorithmProvider() const;
- 
- protected:
-     size_t HashMultipleBlocks(const HashWordType *input, size_t length);
- };
- 
- /// \brief SHA-512 message digest
- /// \sa <a href="http://www.weidai.com/scan-mirror/md.html#SHA-512">SHA-512</a>
- /// \since SHA2 since Crypto++ 4.0, Power8 SHA since Crypto++ 6.1
- class CRYPTOPP_DLL SHA512 : public IteratedHashWithStaticTransform<word64, BigEndian, 128, 64, SHA512, 64, true>
- {
- public:
-     /// \brief Initialize state array
-     /// \param state the state of the hash
-     /// \details InitState sets a state array to SHA512 initial values
-     /// \details Hashes which derive from IteratedHashWithStaticTransform provide static
-     ///   member functions InitState and Transform. External classes, like SEAL and MDC,
-     ///   can initialize state with a user provided key and operate the hash on the data
-     ///   with the user supplied state.
-     /// \note On Intel platforms the state array must be 16-byte aligned for SSE2.
-     static void CRYPTOPP_API InitState(HashWordType *state);
-     /// \brief Operate the hash
-     /// \param digest the state of the hash
-     /// \param data the data to be digested
-     /// \details Transform operates the hash on <tt>data</tt>. When the call is invoked
-     ///   <tt>digest</tt> holds initial state. Upon return <tt>digest</tt> holds the hash
-     ///   or updated state.
-     /// \details Hashes which derive from IteratedHashWithStaticTransform provide static
-     ///   member functions InitState and Transform. External classes, like SEAL and MDC,
-     ///   can initialize state with a user provided key and operate the hash on the data
-     ///   with the user supplied state.
-     /// \note On Intel platforms the state array and data must be 16-byte aligned for SSE2.
-     static void CRYPTOPP_API Transform(HashWordType *digest, const HashWordType *data);
-     /// \brief The algorithm name
-     /// \returns C-style string "SHA-512"
-     CRYPTOPP_STATIC_CONSTEXPR const char* CRYPTOPP_API StaticAlgorithmName() {return "SHA-512";}
- 
-     // Algorithm class
-     std::string AlgorithmProvider() const;
- };
- 
- /// \brief SHA-384 message digest
- /// \sa <a href="http://www.weidai.com/scan-mirror/md.html#SHA-384">SHA-384</a>
- /// \since SHA2 since Crypto++ 4.0, Power8 SHA since Crypto++ 6.1
- class CRYPTOPP_DLL SHA384 : public IteratedHashWithStaticTransform<word64, BigEndian, 128, 64, SHA384, 48, true>
- {
- public:
-     /// \brief Initialize state array
-     /// \param state the state of the hash
-     /// \details InitState sets a state array to SHA384 initial values
-     /// \details Hashes which derive from IteratedHashWithStaticTransform provide static
-     ///   member functions InitState and Transform. External classes, like SEAL and MDC,
-     ///   can initialize state with a user provided key and operate the hash on the data
-     ///   with the user supplied state.
-     /// \note On Intel platforms the state array must be 16-byte aligned for SSE2.
-     static void CRYPTOPP_API InitState(HashWordType *state);
-     /// \brief Operate the hash
-     /// \param digest the state of the hash
-     /// \param data the data to be digested
-     /// \details Transform operates the hash on <tt>data</tt>. When the call is invoked
-     ///   <tt>digest</tt> holds initial state. Upon return <tt>digest</tt> holds the hash
-     ///   or updated state.
-     /// \details Hashes which derive from IteratedHashWithStaticTransform provide static
-     ///   member functions InitState and Transform. External classes, like SEAL and MDC,
-     ///   can initialize state with a user provided key and operate the hash on the data
-     ///   with the user supplied state.
-     /// \note On Intel platforms the state array and data must be 16-byte aligned for SSE2.
-     static void CRYPTOPP_API Transform(HashWordType *digest, const HashWordType *data) {SHA512::Transform(digest, data);}
-     /// \brief The algorithm name
-     /// \returns C-style string "SHA-384"
-     CRYPTOPP_STATIC_CONSTEXPR const char* CRYPTOPP_API StaticAlgorithmName() {return "SHA-384";}
- 
-     // Algorithm class
-     std::string AlgorithmProvider() const;
- };
- 
- NAMESPACE_END
- 
- #endif
+#define SHA2_SHFR(x, n)    (x >> n)
+#define SHA2_ROTR(x, n)   ((x >> n) | (x << ((sizeof(x) << 3) - n)))
+#define SHA2_ROTL(x, n)   ((x << n) | (x >> ((sizeof(x) << 3) - n)))
+#define SHA2_CH(x, y, z)  ((x & y) ^ (~x & z))
+#define SHA2_MAJ(x, y, z) ((x & y) ^ (x & z) ^ (y & z))
+#define SHA256_F1(x) (SHA2_ROTR(x,  2) ^ SHA2_ROTR(x, 13) ^ SHA2_ROTR(x, 22))
+#define SHA256_F2(x) (SHA2_ROTR(x,  6) ^ SHA2_ROTR(x, 11) ^ SHA2_ROTR(x, 25))
+#define SHA256_F3(x) (SHA2_ROTR(x,  7) ^ SHA2_ROTR(x, 18) ^ SHA2_SHFR(x,  3))
+#define SHA256_F4(x) (SHA2_ROTR(x, 17) ^ SHA2_ROTR(x, 19) ^ SHA2_SHFR(x, 10))
+#define SHA2_UNPACK32(x, str)                 \
+{                                             \
+    *((str) + 3) = (uint8) ((x)      );       \
+    *((str) + 2) = (uint8) ((x) >>  8);       \
+    *((str) + 1) = (uint8) ((x) >> 16);       \
+    *((str) + 0) = (uint8) ((x) >> 24);       \
+}
+#define SHA2_PACK32(str, x)                   \
+{                                             \
+    *(x) =   ((uint32) *((str) + 3)      )    \
+           | ((uint32) *((str) + 2) <<  8)    \
+           | ((uint32) *((str) + 1) << 16)    \
+           | ((uint32) *((str) + 0) << 24);   \
+}
+#endif

@@ -11,10 +11,11 @@ class Blockchain {
 	    Blockchain();
 	    void AddBlock(Block newBlock);
 	    bool ValidChain();
-	    unsigned Size();
+	    uint32_t Size();
+	    void Print();
+	    Block GetLastBlock() const;
 	private:
 	    vector<Block> mChain;
-	    Block GetLastBlock() const;
 };
 
 #endif // BLOCKCHAIN_HPP
