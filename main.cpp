@@ -5,10 +5,9 @@
 
 using namespace std;
 
-
 int main() {
     Blockchain chain;
-    string dado;
+    Type dado;
     for (unsigned int i = 2; i < 7; ++i) {
         cout << "Entre com os dados do bloco " << i << endl;
         cin >> dado;

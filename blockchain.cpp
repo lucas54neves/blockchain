@@ -14,11 +14,11 @@ void Blockchain::AddBlock(Block newBlock) {
 
 bool Blockchain::ValidChain() {
     for (unsigned i = 1; i < mChain.size(); ++i) {
-        if ((mChain[i-1].GetHash() == mChain[i].GetPreviousHash()) || (mChain[i-1].GetTime() < mChain[i].GetTime()) || (mChain[i-1].GetIndex() < mChain[i].GetIndex())) {
-            return true;
+        if ((mChain[i-1].GetHash() != mChain[i].GetPreviousHash()) || (mChain[i-1].GetTime() > mChain[i].GetTime()) || (mChain[i-1].GetIndex() > mChain[i].GetIndex())) {
+            return false;
         }
     }
-    return false;
+    return true;
 }
 
 Block Blockchain::GetLastBlock() const {

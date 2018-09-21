@@ -11,7 +11,7 @@ class Blockchain {
 	    Blockchain();
 	    void AddBlock(Block newBlock);
 	    bool ValidChain();
-	    uint32_t Size();
+	    uint32_t Size();  // contém a quantidade atual de blocos contidos na blockchain
 	    void Print();
 	    Block GetLastBlock() const;
 	private:
