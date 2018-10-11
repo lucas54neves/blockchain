@@ -7,7 +7,7 @@
 // Construtor do bloco, utilizando como parâmetro do dado de entrada,
 // a hash do último bloco da blockchain e o índice do novo bloco.
 Block::Block(Type data, string previousHash, uint32_t i) {
-    this->mData = data;
+   this->mData = data;
 	this->mPreviousHash = previousHash;
 	this->mTimeStamp = time(0);
 	this->mHash = CalculateHash();

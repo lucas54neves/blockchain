@@ -8,7 +8,7 @@ using namespace std;
 int main() {
     Blockchain chain;
     Type dado;
-    for (unsigned int i = 2; i < 7; ++i) {
+    for (unsigned int i = 2; i <= 3; ++i) {
         cout << "Entre com os dados do bloco " << i << endl;
         cin >> dado;
         Block testBlock(dado, chain.GetLastBlock().GetHash(), chain.Size()+1);

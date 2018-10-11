@@ -1,17 +1,20 @@
 CXXFLAGS = -Wall -g    # Opções do compilador: todos warnings e debug info
 
-PROG = main
+PROG = TheBlockchain
 FONTES = main.cpp block.cpp blockchain.cpp sha256.cpp
 OBJETOS = $(FONTES:.cpp=.o)
 
 $(PROG): $(OBJETOS)
-	@g++ $(CXXFLAGS) $(OBJETOS) -o $@
+	g++ $(CXXFLAGS) $(OBJETOS) -o $@
 
 clean:
-	@rm -f $(OBJETOS) $(PROG)
+	rm -f $(OBJETOS) $(PROG)
 
 depend:
-	@makedepend -- ${CFLAGS} -- ${FONTES}
+	makedepend -- ${CFLAGS} -- ${FONTES}
+
+run:
+	./TheBlockchain
 
 # PROG = ... define o nome do programa executável
 # FONTES = ... define todos os módulos
